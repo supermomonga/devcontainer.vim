@@ -142,16 +142,20 @@ func download(downloadURL string, destPath string) error {
 }
 
 // run サブコマンド用のツールインストール
-func InstallRunTools(installDir string) (string, string, error) {
+func InstallRunTools(installDir string) (string, string, string, error) {
 	vimPath, err := VIM.Install(installDir, false)
 	if err != nil {
-		return vimPath, "", err
+		return vimPath, "", "", err
 	}
 	cdrPath, err := CDR.Install(installDir, false)
 	if err != nil {
-		return vimPath, cdrPath, err
+		return vimPath, cdrPath, "", err
 	}
-	return vimPath, cdrPath, err
+	portForwarderPath, err := PortForwarder.Install(installDir, false)
+	if err != nil {
+		return vimPath, cdrPath, "", err
+	}
+	return vimPath, cdrPath, portForwarderPath, err
 }
 
 // start サブコマンド用のツールインストール

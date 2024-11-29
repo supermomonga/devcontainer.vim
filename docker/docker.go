@@ -42,7 +42,15 @@ func (e *ContainerNotFoundError) Error() string {
 	return e.msg
 }
 
-func Run(args []string, vimFilePath string, cdrPath string, configDirForDocker string, vimrc string, defaultRunargs []string) error {
+func Run(
+	args []string,
+	vimFilePath string,
+	cdrPath string,
+	portForwarderPath string,
+	configDirForDocker string,
+	vimrc string,
+	defaultRunargs []string) error {
+
 	vimFileName := filepath.Base(vimFilePath)
 
 	// バックグラウンドでコンテナを起動
@@ -78,6 +86,12 @@ func Run(args []string, vimFilePath string, cdrPath string, configDirForDocker s
 		return err
 	}
 	fmt.Printf("Started clipboard-data-receiver with pid: %d, port: %d\n", pid, port)
+
+	// コンテナへ port-forwarder を転送して実行権限を追加
+	err = Cp("port-forwarder", portForwarderPath, containerID, "/")
+	if err != nil {
+		return err
+	}
 
 	// コンテナへ appimage を転送して実行権限を追加
 	// `docker cp <os.UserCacheDir/devcontainer.vim/Vim-AppImage> <dockerrun 時に標準出力に表示される CONTAINER ID>:/`

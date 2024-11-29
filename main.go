@@ -149,7 +149,7 @@ func main() {
 					}
 
 					// 必要なファイルのダウンロード
-					vimPath, cdrPath, err := tools.InstallRunTools(binDir)
+					vimPath, cdrPath, portForwarderPath, err := tools.InstallRunTools(binDir)
 					if err != nil {
 						fmt.Fprintf(os.Stderr, "Error installing run tools: %v\n", err)
 						os.Exit(1)
@@ -166,7 +166,7 @@ func main() {
 					if runtime.GOOS == "windows" {
 						// コンテナ起動
 						// windows はシェル変数展開が上手くいかないので runargs を使用しない
-						err = docker.Run(cCtx.Args().Slice(), vimPath, cdrPath, configDirForDocker, vimrc, []string{})
+						err = docker.Run(cCtx.Args().Slice(), vimPath, cdrPath, portForwarderPath, configDirForDocker, vimrc, []string{})
 						if err != nil {
 							fmt.Fprintf(os.Stderr, "Error running docker: %v\n", err)
 							os.Exit(1)
@@ -187,7 +187,7 @@ func main() {
 						}
 
 						// コンテナ起動
-						err = docker.Run(cCtx.Args().Slice(), vimPath, cdrPath, configDirForDocker, vimrc, defaultRunargs)
+						err = docker.Run(cCtx.Args().Slice(), vimPath, cdrPath, portForwarderPath, configDirForDocker, vimrc, defaultRunargs)
 						if err != nil {
 							fmt.Fprintf(os.Stderr, "Error running docker: %v\n", err)
 							os.Exit(1)
