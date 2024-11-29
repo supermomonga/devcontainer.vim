@@ -31,7 +31,14 @@ func (e *UnknownTypeError) Error() string {
 
 // devcontainer でコンテナを立ち上げ、 Vim を転送し、実行する。
 // 既存実装の都合上、configFilePath から configDirForDevcontainer を抽出している
-func ExecuteDevcontainer(args []string, devcontainerPath string, vimFilePath string, cdrPath, configFilePath string, vimrc string) error {
+func ExecuteDevcontainer(
+	args []string,
+	devcontainerPath string,
+	vimFilePath string,
+	cdrPath string,
+	portForwarderPath string,
+	configFilePath string,
+	vimrc string) error {
 
 	vimFileName := filepath.Base(vimFilePath)
 
@@ -68,9 +75,15 @@ func ExecuteDevcontainer(args []string, devcontainerPath string, vimFilePath str
 	}
 	fmt.Printf("Started clipboard-data-receiver with pid: %d, port: %d\n", pid, port)
 
+	containerID := upCommandResult.ContainerID
+	// コンテナへ port-forwarder を転送して実行権限を追加
+	err = docker.Cp("port-forwarder", portForwarderPath, containerID, "/")
+	if err != nil {
+		return err
+	}
+
 	// コンテナへ appimage を転送して実行権限を追加
 	// `docker cp <os.UserCacheDir/devcontainer.vim/Vim-AppImage> <dockerrun 時に標準出力に表示される CONTAINER ID>:/`
-	containerID := upCommandResult.ContainerID
 	dockerCpArgs := []string{"cp", vimFilePath, containerID + ":/"}
 	fmt.Printf("Copy AppImage: `%s \"%s\"` ...", containerCommand, strings.Join(dockerCpArgs, "\" \""))
 	copyResult, err := exec.Command(containerCommand, dockerCpArgs...).CombinedOutput()

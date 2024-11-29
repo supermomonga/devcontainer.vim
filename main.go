@@ -307,7 +307,7 @@ func main() {
 					// devcontainer でコンテナを立てる
 
 					// 必要なファイルのダウンロード
-					vimPath, devcontainerPath, cdrPath, err := tools.InstallStartTools(binDir)
+					vimPath, devcontainerPath, cdrPath, portForwarderPath, err := tools.InstallStartTools(binDir)
 					if err != nil {
 						fmt.Fprintf(os.Stderr, "Error installing start tools: %v\n", err)
 						os.Exit(1)
@@ -327,7 +327,7 @@ func main() {
 					}
 
 					// devcontainer を用いたコンテナ立ち上げ
-					err = devcontainer.ExecuteDevcontainer(args, devcontainerPath, vimPath, cdrPath, configFilePath, vimrc)
+					err = devcontainer.ExecuteDevcontainer(args, devcontainerPath, vimPath, cdrPath, portForwarderPath, configFilePath, vimrc)
 					if err != nil {
 						if errors.Is(err, os.ErrPermission) {
 							fmt.Fprintf(os.Stderr, "Permission error: %v\n", err)
