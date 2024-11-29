@@ -675,6 +675,33 @@ func main() {
 							},
 						},
 					},
+					{
+						Name:            tools.PortForwarderFileName,
+						Usage:           "Management port-forwarder",
+						UsageText:       "devcontainer.vim tool port-forwarder SUB_COMMAND",
+						HideHelp:        false,
+						SkipFlagParsing: false,
+						Subcommands: []*cli.Command{
+							{
+								Name:            "download",
+								Usage:           "Download newly port-forwarder cli",
+								UsageText:       "devcontainer.vim tool port-forwarder download",
+								HideHelp:        false,
+								SkipFlagParsing: false,
+								Action: func(cCtx *cli.Context) error {
+
+									// port-forwarder のダウンロード
+									_, err := tools.PortForwarder.Install(binDir, true)
+									if err != nil {
+										fmt.Fprintf(os.Stderr, "Error installing port-forwarder: %v\n", err)
+										os.Exit(1)
+									}
+
+									return nil
+								},
+							},
+						},
+					},
 				},
 			},
 			{
